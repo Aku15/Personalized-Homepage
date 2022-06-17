@@ -1,31 +1,42 @@
-
 import express from 'express';
 const app = express();
-// const mongoose = require('mongoose');
-// const path = require('path');
 import path from 'path';
-
+const __dirname = path.resolve();
+import userController from './controllers/userControllers.js';
 // const homepage = require('./routers/homepage.js');
 import homepage from './routers/homepage.js';
 
 // app.use(express.json());
+app.use(express.json());
 
 
+//show login page on start
 app.get('/', (req, res) => {
-    return res.json({home: 1})
+  res.sendFile(path.join(__dirname, './html/dummy.html'))})
+
+//show signup when redirected to /signup
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, './html/signup.html'))})
+
+app.post('/signup', userController.createUser, (req, res) => {
+  console.log('before r')
+  res.redirect('/secret');
+})
+
+app.get('/secret', (req, res) => {
+  res.sendFile(path.join(__dirname, './html/userlist.html'))})
+
+
+  app.get('/secret/users', userController.getAllUsers, (req, res) => {
+    res.send( { users: res.locals.users });
   })
-
-
-
-
+  
+//routes
 app.get('/home', homepage);
 app.get('/weather', homepage);
 app.get('/catmemes', homepage);
 
-// app.call((req, res, next) => {
-//     res.status(404);
-//     return next();
-// })
+
 
 //global error handler
 app.use((err, req, res, next) => {

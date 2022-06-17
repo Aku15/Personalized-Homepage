@@ -9,6 +9,7 @@
     "express": "^4.18.1",
     "mongoose": "^6.3.8",
     "node-fetch": "^3.2.6",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "sinon": "^14.0.0"
   }
 }
