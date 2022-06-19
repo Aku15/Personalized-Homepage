@@ -1,6 +1,7 @@
 // const bcrypt = require('bcryptjs/dist/bcrypt');
 // const {pass} = require('sinon/lib/sinon/assert');
 // const User = require('./mongoserver.js');
+import bcrypt from 'bcryptjs'
 import User from '/home/level2zombie/Personalized-Homepage/mongoserver.js'
 
 const userController = {};
@@ -22,25 +23,52 @@ userController.getAllUsers = (req, res, next) => {
     });
   };
 
-userController.createUser = (req, res) => {
+userController.createUser = (req, res, next) => {
     // write code here
+    console.log('inside create user')
     console.log(req.body)
-    // const { username, password } = req.body;
-    // console.log('Username --> ', username);
-    // console.log('Password --> ', password);
+    const { username, password } = req.body;
     if (username && password) {
+      console.log('usercreated')
       User.create({ username: username, password: password })
         .then(data => {
           console.log('New user created!');
           res.locals.id = data.id;
-          return res.status(200);
+          return next();
         })
         .catch(err => {
           next('Error in userController.createUser: ' + JSON.stringify(err))
         })
-    } else {
-      return next('Please enter a username and password'); // how does this get routed to the global error handler? server.js?
-    }
+    } 
   };
 
+//login functionality
+  userController.login = (req, res, next) => {
+    console.log('inside login middleware')
+    const {username, password} = req.body;
+    User.findOne({username})
+      .then(data => {
+        if (!data) res.redirect('/signup');
+        else{
+          bcrypt.compare(password, data.password)
+            .then(match => {
+              if (!match) res.redirect('/signup');
+              else{
+                console.log('login successful')
+                res.locals.id = data.id;
+                return next();
+          }
+        })
+      }
+    })
+  }
+
+  // userController.login = (req, res, next) => {
+  //   console.log('inside login')
+  //   const {username, password} = req.body;
+  //   console.log(req.body)
+  //     User.findOne({username})
+  //     .then((data) =>  bcrypt.compare(password, data.password))
+  //     .then((data) => console.log(data))
+  // }
   export default userController;

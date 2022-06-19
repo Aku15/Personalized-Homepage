@@ -50,7 +50,20 @@ router.get('/weather', (req, res) => {
         });
     })
     
-
+//bored random activity api
+router.get('/bored', (req, res) => {
+  return fetch('http://www.boredapi.com/api/activity/')
+  .then(data => data.json())
+  .then(data => res.send(data))
+  .catch(err => {
+    console.log(err)
+    const errorCatcher = {
+        log: 'catmemes failed',
+        message: err
+    };
+    throw(errorCatcher);
+    });
+})
 
 
 
